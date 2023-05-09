@@ -14,6 +14,8 @@ LOG_LEVEL='WARNING'
 SPIDER_MODULES = ["ccf_paper_crawl.spiders"]
 NEWSPIDER_MODULE = "ccf_paper_crawl.spiders"
 
+DOWNLOAD_FAIL_ON_DATALOSS = False
+RETRY_ENABLED = True
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = "ccf_paper_crawl (+http://www.yourdomain.com)"

@@ -2,13 +2,14 @@ import scrapy
 from ccf_paper_crawl.items import PaperInfo
 import csv
 import os
+import threading
+
+mutex = threading.Lock()
 
 
 class CCFPaperSpider(scrapy.Spider):
     name = "ccf_paper_crawl"
-    total_c, total_j = 0, 0
-    finished_c, finished_j = set(), set()
-    terminal_width = os.get_terminal_size().columns
+    total, finished = 0, set()
     paper_count = 0
 
     def start_requests(self):
@@ -23,17 +24,13 @@ class CCFPaperSpider(scrapy.Spider):
             return ccf_conference, ccf_journal
 
         ccf_conference, ccf_journal = get_ccf_content()
-        CCFPaperSpider.total_c, CCFPaperSpider.total_j = len(ccf_conference), len(ccf_journal)
-        CCFPaperSpider.paper_count = 0
-        print('———————————\n| Journal |\n———————————')
+        CCFPaperSpider.total = len(ccf_conference) + len(ccf_journal)
         for j in ccf_journal:
             yield scrapy.Request(url=j[-1], callback=self.parse_j, meta={'info': j[:-1]})
-        print('Total Journal Papers: {}'.format(CCFPaperSpider.paper_count))
         CCFPaperSpider.paper_count = 0
-        print('——————————————\n| Conference |\n——————————————')
         for c in ccf_conference:
             yield scrapy.Request(url=c[-1], callback=self.parse_c, meta={'info': c[:-1]})
-        print('Total Conference Papers: {}'.format(CCFPaperSpider.paper_count))
+        print('\n\n\n--------------------\n[ Total Papers: {} ]'.format(CCFPaperSpider.paper_count))
 
     def parse_c(self, response):
         entries = response.xpath("//ul[@class='publ-list']//nav[@class='publ']")
@@ -55,12 +52,11 @@ class CCFPaperSpider(scrapy.Spider):
         entries = response.xpath("//div[@id='main']/ul/li[@class!='no-pub']")
         src, src_abbr, types, level, classes = response.meta['info']
         key = src + classes
-        if types == 'Conference':
-            CCFPaperSpider.finished_c.add(key)
-            print('\r' + ' ' * (CCFPaperSpider.terminal_width - 1) + '\r' + ('>>> [ {:>3d}/{:>3d} | {:>2d}% | {:>8d}] '.format(len(CCFPaperSpider.finished_c), CCFPaperSpider.total_c, len(CCFPaperSpider.finished_c) * 100 // CCFPaperSpider.total_c, CCFPaperSpider.paper_count) + '( ' + src_abbr + ' ) ' + src)[:CCFPaperSpider.terminal_width - 1], end='')
-        elif types == 'Journal':
-            CCFPaperSpider.finished_j.add(key)
-            print('\r' + ' ' * (CCFPaperSpider.terminal_width - 1) + '\r' + ('>>> [ {:>3d}/{:>3d} | {:>2d}% | {:>8d}] '.format(len(CCFPaperSpider.finished_j), CCFPaperSpider.total_j, len(CCFPaperSpider.finished_j) * 100 // CCFPaperSpider.total_j, CCFPaperSpider.paper_count) + '( ' + src_abbr + ' ) ' + src)[:CCFPaperSpider.terminal_width - 1], end='')
+        terminal_width = os.get_terminal_size().columns
+        mutex.acquire()
+        CCFPaperSpider.finished.add(key)
+        print(' ' * (terminal_width - 1) + '\r' + ('>>> [ {:>3d}/{:>3d} | {:>2d}% | {:>8d}] '.format(len(CCFPaperSpider.finished), CCFPaperSpider.total, len(CCFPaperSpider.finished) * 100 // CCFPaperSpider.total, CCFPaperSpider.paper_count) + ' <' + types[0] + '> ' + '( ' + src_abbr + ' ) ' + src)[:terminal_width - 1], end='\r')
+        mutex.release()
         for entry in entries:
             item = PaperInfo()
             date = entry.xpath(".//meta[@itemprop='datePublished']/@content").extract_first()
@@ -79,5 +75,7 @@ class CCFPaperSpider(scrapy.Spider):
                 item['url'] = url.strip()
             else:
                 item['url'] = ''
+            mutex.acquire()
             CCFPaperSpider.paper_count += 1
+            mutex.release()
             yield item
