@@ -5,8 +5,14 @@
 
 
 # useful for handling different item types with a single interface
+import os
 from itemadapter import ItemAdapter
 import sqlite3
+
+from ccf_paper_crawl.spiders.ccf_paper_crawl import CCFPaperSpider
+import threading
+
+lock = threading.Lock()
 
 
 class SQLitePipeline:
@@ -42,6 +48,16 @@ class SQLitePipeline:
             self.get_item_info(item)
         )
         self.connect.commit()
+
+        src, src_abbr, types, level, classes, _, _, url = self.get_item_info(item)
+        terminal_width = os.get_terminal_size().columns
+        CCFPaperSpider.lock2.acquire()
+        task = [src, src_abbr, types, level, classes]
+        if task in CCFPaperSpider.ccf_task:
+            CCFPaperSpider.ccf_task.remove(task)
+        print(' ' * (terminal_width - 1) + '\r' + ('>>> [ {:>3d}/{:>3d} | {:>2d}% | {:>8d}] '.format(CCFPaperSpider.ccf_total - len(CCFPaperSpider.ccf_task), CCFPaperSpider.ccf_total, (CCFPaperSpider.ccf_total - len(CCFPaperSpider.ccf_task)) * 100 // CCFPaperSpider.ccf_total, CCFPaperSpider.paper_count) + ' <' + types[0] + '> ' + '( ' + src_abbr + ' ) ' + src)[:terminal_width - 1], end='\r')
+        CCFPaperSpider.lock2.release()
+
         return item
 
     def open_spider(self, spider):

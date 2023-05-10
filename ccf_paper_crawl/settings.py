@@ -9,7 +9,10 @@
 
 BOT_NAME = "ccf_paper_crawl"
 
-LOG_LEVEL='WARNING'
+LOG_LEVEL='DEBUG'
+LOG_FORMAT = '[%(levelname)s]: %(message)s'
+LOG_FILE = 'log.txt'
+
 
 SPIDER_MODULES = ["ccf_paper_crawl.spiders"]
 NEWSPIDER_MODULE = "ccf_paper_crawl.spiders"
@@ -18,18 +21,18 @@ DOWNLOAD_FAIL_ON_DATALOSS = False
 RETRY_ENABLED = True
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = "ccf_paper_crawl (+http://www.yourdomain.com)"
+USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-#CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 4
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-#DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = 1
 # The download delay setting will honor only one of:
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
 #CONCURRENT_REQUESTS_PER_IP = 16

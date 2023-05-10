@@ -3,6 +3,7 @@
 # See documentation in:
 # https://docs.scrapy.org/en/latest/topics/items.html
 
+from pprint import pformat
 import scrapy
 
 
@@ -20,9 +21,5 @@ class PaperInfo(scrapy.Item):
     # abstract = scrapy.Field()
     url=scrapy.Field()
 
-class SrcInfo(scrapy.Item):
-    src = scrapy.Field()
-    src_abbr = scrapy.Field()
-    classes = scrapy.Field()
-    url = scrapy.Field()
-
+    def __repr__(self):
+        return ''
