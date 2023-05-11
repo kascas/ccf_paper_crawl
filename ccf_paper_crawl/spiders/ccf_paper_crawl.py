@@ -40,10 +40,10 @@ class CCFPaperSpider(scrapy.Spider):
                 elif t[2] == 'Conference':
                     yield scrapy.Request(url=url, callback=self.parse_c, meta={'info': t}, dont_filter=True)
         print('\n\n\n--------------------\n[ Total Papers: {} ]\n--------------------'.format(CCFPaperSpider.paper_count))
-        pd.DataFrame(CCFPaperSpider.ccf_ignore).to_csv('ignore.csv', sep='\t', header=None, index=False)
+        pd.DataFrame(CCFPaperSpider.ccf_ignore).to_csv('./output/ignore.csv', sep='\t', header=None, index=False)
 
     def record(self):
-        pd.DataFrame(CCFPaperSpider.ccf_task).to_csv('record.csv', sep='\t', header=None, index=False)
+        pd.DataFrame(CCFPaperSpider.ccf_task).to_csv('./output/record.csv', sep='\t', header=None, index=False)
 
     def parse_c(self, response):
         entries = response.xpath("//ul[@class='publ-list']//nav[@class='publ']")

@@ -11,8 +11,8 @@ BOT_NAME = "ccf_paper_crawl"
 
 LOG_LEVEL='DEBUG'
 LOG_FORMAT = '[%(levelname)s]: %(message)s'
-LOG_FILE = 'log.txt'
-
+LOG_FILE = './output/log.txt'
+LOG_FILE_APPEND = False
 
 SPIDER_MODULES = ["ccf_paper_crawl.spiders"]
 NEWSPIDER_MODULE = "ccf_paper_crawl.spiders"
