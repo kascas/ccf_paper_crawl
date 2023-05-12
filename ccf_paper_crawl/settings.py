@@ -11,7 +11,7 @@ BOT_NAME = "ccf_paper_crawl"
 
 LOG_LEVEL='DEBUG'
 LOG_FORMAT = '[%(levelname)s]: %(message)s'
-LOG_FILE = './output/log.txt'
+LOG_FILE = 'log.txt'
 LOG_FILE_APPEND = False
 
 SPIDER_MODULES = ["ccf_paper_crawl.spiders"]
@@ -27,7 +27,7 @@ USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, li
 ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 4
+CONCURRENT_REQUESTS = 8
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
@@ -51,9 +51,9 @@ DOWNLOAD_DELAY = 1
 
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
-#    "ccf_paper_crawl.middlewares.CcfPaperCrawlSpiderMiddleware": 543,
-#}
+SPIDER_MIDDLEWARES = {
+   "ccf_paper_crawl.middlewares.RestoreSpiderMiddleware": 500,
+}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html

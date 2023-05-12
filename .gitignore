@@ -1,4 +1,7 @@
 ccf_paper_crawl/__pycache__
 ccf_paper_crawl/spiders/__pycache__
-database.*
-/output/*
+*.sqlite
+*.sqlite-journal
+/output/
+/restore/
+log.txt

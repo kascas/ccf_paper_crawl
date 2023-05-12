@@ -17,8 +17,8 @@ lock = threading.Lock()
 
 class SQLitePipeline:
     def __init__(self) -> None:
-        self.connect = sqlite3.connect('./database.sqlite')
-        self.connect.execute('DROP TABLE papers;')
+        self.connect = sqlite3.connect('./tmp.sqlite')
+        # self.connect.execute('DROP TABLE papers;')
         self.connect.execute('''
             CREATE TABLE IF NOT EXISTS papers(
                 id          INTEGER PRIMARY KEY AUTOINCREMENT   NOT NULL,
@@ -43,8 +43,9 @@ class SQLitePipeline:
         return tuple(values)
 
     def process_item(self, item, spider):
+        src, src_abbr, types, level, classes, year, title, url = self.get_item_info(item)
         self.cursor.execute(
-            "INSERT INTO papers (src, src_abbr, types, level, classes, year, title, url) values(?, ?, ?, ?, ?, ?, ?, ?);",
+            "INSERT OR IGNORE INTO papers (src, src_abbr, types, level, classes, year, title, url) values(?, ?, ?, ?, ?, ?, ?, ?);",
             self.get_item_info(item)
         )
         self.connect.commit()
