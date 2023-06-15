@@ -23,9 +23,9 @@ class CCFPaperSpider(scrapy.Spider):
                     print("IGNORE: {} ({})".format(t[0], t[1]))
                     continue
                 if t[2] == 'Journal':
-                    yield scrapy.Request(url=url, callback=self.parse_j, meta={'info': t}, dont_filter=True)
+                    yield scrapy.Request(url=url, callback=self.parse_j, meta={'info': t})
                 elif t[2] == 'Conference':
-                    yield scrapy.Request(url=url, callback=self.parse_c, meta={'info': t}, dont_filter=True)
+                    yield scrapy.Request(url=url, callback=self.parse_c, meta={'info': t})
         CCFPaperSpider.spider_state = True
 
     def parse_c(self, response):
