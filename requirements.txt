@@ -1,2 +1,2 @@
 pandas==2.0.0
-Scrapy==2.8.0
+scrapy==2.9.0
