@@ -18,8 +18,10 @@ class CCFPaperSpider(scrapy.Spider):
             for t in CCFPaperSpider.ccf_task:
                 url = CCFPaperSpider.ccf_url_dict[t[0] + t[-1]]
                 if re.match('http(s)?://dblp.*', url) is None:
+                    CCFPaperSpider.lock2.acquire()
                     CCFPaperSpider.ccf_task.remove(t)
                     CCFPaperSpider.ccf_ignore.append(t)
+                    CCFPaperSpider.lock2.release()
                     print("IGNORE: {} ({})".format(t[0], t[1]))
                     continue
                 if t[2] == 'Journal':
@@ -29,20 +31,34 @@ class CCFPaperSpider(scrapy.Spider):
         CCFPaperSpider.spider_state = True
 
     def parse_c(self, response):
-        entries = response.xpath("//ul[@class='publ-list']//nav[@class='publ']")
+        entries = response.xpath("//ul[@class='publ-list']//nav[@class='publ']//li[1]/div[@class='head']/a/@href").extract()
+        t = response.meta['info']
+        if len(entries) == 0:
+            CCFPaperSpider.lock2.acquire()
+            CCFPaperSpider.ccf_task.remove(t)
+            CCFPaperSpider.ccf_ignore.append(t)
+            CCFPaperSpider.lock2.release()
+            print("IGNORE: {} ({})".format(t[0], t[1]))
+            return
         for entry in entries:
-            home_url = entry.xpath(".//li[1]/div[@class='head']/a/@href").extract_first()
-            if home_url is None:
+            if entry is None:
                 continue
-            yield scrapy.Request(home_url, callback=self.parse_item, meta=response.meta)
+            yield scrapy.Request(entry, callback=self.parse_item, meta=response.meta)
 
     def parse_j(self, response):
-        entries = response.xpath("//div[@id='main']/ul//li")
+        entries = response.xpath("//div[@id='main']/ul//li/a/@href").extract()
+        t = response.meta['info']
+        if len(entries) == 0:
+            CCFPaperSpider.lock2.acquire()
+            CCFPaperSpider.ccf_task.remove(t)
+            CCFPaperSpider.ccf_ignore.append(t)
+            CCFPaperSpider.lock2.release()
+            print("IGNORE: {} ({})".format(t[0], t[1]))
+            return
         for entry in entries:
-            home_url = entry.xpath("./a/@href").extract_first()
-            if home_url is None:
+            if entry is None:
                 continue
-            yield scrapy.Request(home_url, callback=self.parse_item, meta=response.meta)
+            yield scrapy.Request(entry, callback=self.parse_item, meta=response.meta)
 
     def parse_item(self, response):
         entries = response.xpath("//div[@id='main']/ul/li[@class!='no-pub']")

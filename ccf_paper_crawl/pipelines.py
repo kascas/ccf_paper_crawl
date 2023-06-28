@@ -56,7 +56,7 @@ class SQLitePipeline:
         task = [src, src_abbr, types, level, classes]
         if task in CCFPaperSpider.ccf_task:
             CCFPaperSpider.ccf_task.remove(task)
-        print(' ' * (terminal_width - 1) + '\r' + ('>>> [ {:>3d}/{:>3d} | {:>2d}% | {:>8d}] '.format(CCFPaperSpider.ccf_total - len(CCFPaperSpider.ccf_task), CCFPaperSpider.ccf_total, (CCFPaperSpider.ccf_total - len(CCFPaperSpider.ccf_task)) * 100 // CCFPaperSpider.ccf_total, CCFPaperSpider.paper_count) + ' <' + types[0] + '> ' + '( ' + src_abbr + ' ) ' + src)[:terminal_width - 1], end='\r')
+        print(' ' * (terminal_width - 1) + '\r' + ('>>> [ {:>3d}/{:>3d} | {:>2d}% | {:>8d}] '.format(CCFPaperSpider.ccf_total - len(CCFPaperSpider.ccf_task), CCFPaperSpider.ccf_total, (CCFPaperSpider.ccf_total - len(CCFPaperSpider.ccf_task)) * 100 // CCFPaperSpider.ccf_total, CCFPaperSpider.paper_count) + ' [' + types[0] + '] <' + level + '> (' + src_abbr + ') ' + src)[:terminal_width - 1], end='\r')
         CCFPaperSpider.lock2.release()
 
         return item

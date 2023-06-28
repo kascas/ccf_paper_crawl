@@ -9,7 +9,7 @@
 
 BOT_NAME = "ccf_paper_crawl"
 
-LOG_LEVEL='DEBUG'
+LOG_LEVEL='INFO'
 LOG_FORMAT = '[%(levelname)s]: %(message)s'
 LOG_FILE = 'log.txt'
 LOG_FILE_APPEND = False
