@@ -70,8 +70,9 @@ class CCFPaperSpider(scrapy.Spider):
             if date != None:
                 item['year'] = int(date.strip().replace('\n', ' '))
             else:
-                item['year'] = -1
-            title = entry.xpath(".//span[@class='title']//text()").extract_first()
+                # item['year'] = -1
+                continue
+            title = ' '.join([i.strip() for i in entry.xpath(".//span[@class='title']//text()").extract()])
             if title != None:
                 item['title'] = title.strip().replace('\n', ' ')
             else:
